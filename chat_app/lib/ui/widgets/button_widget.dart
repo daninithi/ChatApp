@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({
-    super.key, this.onPressed, required this.text
-  });
+  const CustomButton(
+      {super.key, required this.text, this.onPressed, this.loading = false});
 
   final void Function()? onPressed;
   final String text;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +17,13 @@ class CustomButton extends StatelessWidget {
       width: 1.sw,
       height: 40.h,
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Primary,
-        ),
-        onPressed: onPressed,
-        child: Text(text, style: body.copyWith(color: Colors.white)),
-      ),
+          style: ElevatedButton.styleFrom(backgroundColor: Primary),
+          onPressed: onPressed,
+          child: loading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Text(text, style: body.copyWith(color: white))),
     );
   }
 }
-

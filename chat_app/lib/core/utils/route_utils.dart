@@ -3,12 +3,9 @@ import 'package:chat_app/ui/screens/auth/login/login_screen.dart';
 import 'package:chat_app/ui/screens/auth/signup/signup_screen.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chatroom/chat_screen.dart';
 import 'package:chat_app/ui/screens/home/home_screen.dart';
+import 'package:chat_app/ui/screens/wrapper/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/ui/screens/splash/splash_screen.dart';
-
-
-
-
 
 class RouteUtils {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -23,6 +20,9 @@ class RouteUtils {
         //home
        case home:
         return MaterialPageRoute(builder: (context) => const HomeScreen());
+      case wrapper:
+        return MaterialPageRoute(builder: (context) => const Wrapper());
+        //chat
       case chatroom:
         return MaterialPageRoute(builder: (context) => const ChatScreen());
 
