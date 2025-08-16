@@ -8,4 +8,12 @@ const home = "/home";
 const login = "/login";
 const signup = "/signup";
 const wrapper = "/wrapper";
+const chatroom = "/chatroom";
+
+// icons
+const chatsIcon = "assets/chats_icon.png";
+const homeIcon = "assets/home_icon.png";
+const profileIcon = "assets/profile_icon.png";
+const settingsIcon = "assets/settings_icon.png";
+const searchIcon = "assets/search_icon.png";
 
