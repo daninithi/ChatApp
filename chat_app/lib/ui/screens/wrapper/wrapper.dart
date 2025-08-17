@@ -22,6 +22,7 @@ class Wrapper extends StatelessWidget {
         } else {
           userProvider.loadUser(user.uid);
           return const BottomNavigationsScreen();
+          // return const HomeScreen();
         }
       },
     );

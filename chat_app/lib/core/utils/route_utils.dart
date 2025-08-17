@@ -18,8 +18,8 @@ class RouteUtils {
        case signup:
         return MaterialPageRoute(builder: (context) => const SignUpScreen()); 
         //home
-       case home:
-        return MaterialPageRoute(builder: (context) => const HomeScreen());
+      //  case home:
+      //   return MaterialPageRoute(builder: (context) => const HomeScreen());
       case wrapper:
         return MaterialPageRoute(builder: (context) => const Wrapper());
         //chat

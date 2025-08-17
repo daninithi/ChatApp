@@ -1,6 +1,7 @@
 import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/bottom_navigation_viewmodel.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chat_list_screen.dart';
+import 'package:chat_app/ui/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -9,18 +10,18 @@ class BottomNavigationsScreen extends StatelessWidget {
   const BottomNavigationsScreen({super.key});
 
   static final List<Widget> _screens = [
-    const Center(child: Text("Home screen")),
+    // const Center(child: Text("Home screen")),
     const ChatsListScreen(),
-    const Center(child: Text("profile screen")),
+    const ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     final items = const [
-      BottomNavigationBarItem(
-        label: "",
-        icon: BottomNavButton(iconPath: homeIcon),
-      ),
+      // BottomNavigationBarItem(
+      //   label: "",
+      //   icon: BottomNavButton(iconPath: homeIcon),
+      // ),
       BottomNavigationBarItem(
         label: "",
         icon: BottomNavButton(iconPath: chatsIcon),
