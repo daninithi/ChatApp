@@ -62,6 +62,7 @@ class ProfileScreen extends StatelessWidget {
                             text: 'Log Out',
                             onPressed: () {
                               AuthService().logout();
+                              Provider.of<UserProvider>(context).clearUser();
                             },
                           ),
                         ),

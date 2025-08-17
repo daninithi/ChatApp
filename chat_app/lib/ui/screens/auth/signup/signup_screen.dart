@@ -21,12 +21,6 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<SignUpViewModel>(
       create: (context) => SignUpViewModel(AuthService(), DatabaseService(), email),
-
-      // create: (context) {
-      //   final vm = SignUpViewModel(AuthService(), DatabaseService());
-      //   vm.setEmail(email);
-      //   return vm;
-      // },
       child: Consumer<SignUpViewModel>(
         builder: (context, modal, _) {
           return Scaffold(
