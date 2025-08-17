@@ -9,19 +9,19 @@ import 'package:chat_app/core/models/user.dart';
 class SignUpViewModel extends BaseViewmodel {
   final AuthService _auth;
   final DatabaseService _db;
+   String _email ;
 
-  SignUpViewModel(this._auth, this._db);
+  SignUpViewModel(this._auth, this._db, this._email);
 
-  String _email = '';
   String _password = '';
   String _name = '';
   String _confirmPassword = ''; 
 
-  setEmail(String value) {
-    _email = value;
-    notifyListeners();
-    log("Name: $_email"); // Log the email for debugging
-  } 
+  // setEmail(String value) {
+  //   _email = value;
+  //   notifyListeners();
+  //   log("Name: $_email"); // Log the email for debugging
+  // } 
 
   setName(String value) {
     _name = value;

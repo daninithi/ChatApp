@@ -14,12 +14,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+  final String email;
+  const SignUpScreen({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<SignUpViewModel>(
-      create: (context) => SignUpViewModel(AuthService(), DatabaseService()),
+      create: (context) => SignUpViewModel(AuthService(), DatabaseService(), email),
+
+      // create: (context) {
+      //   final vm = SignUpViewModel(AuthService(), DatabaseService());
+      //   vm.setEmail(email);
+      //   return vm;
+      // },
       child: Consumer<SignUpViewModel>(
         builder: (context, modal, _) {
           return Scaffold(
@@ -30,16 +37,12 @@ class SignUpScreen extends StatelessWidget {
                   30.verticalSpace,
                   Text("create your account", style: h),
                   5.verticalSpace,
+                  Text("Email: $email"),
                   const Text("Please provide your details"),
                   24.verticalSpace,
                   CustomTextField(
                     hintText: "Enter your name",
                     onChanged: modal.setName,
-                  ),
-                  20.verticalSpace,
-                  CustomTextField(
-                    hintText: "Enter your email",
-                    onChanged: modal.setEmail,
                   ),
                   20.verticalSpace,
                   CustomTextField(
@@ -70,16 +73,7 @@ class SignUpScreen extends StatelessWidget {
                     },
                     text: "Sign Up",
                   ),
-                  20.verticalSpace,
-                  Row(mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Text("already have an account?",style: body.copyWith(color: grey)), 
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, login);
-                    },
-                    child: Text("Log in", style: body.copyWith(fontWeight: FontWeight.bold)),
-                  )],)
-          
+
                 ],
               ),
             ),
