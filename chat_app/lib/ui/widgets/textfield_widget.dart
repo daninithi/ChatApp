@@ -28,6 +28,7 @@ class CustomTextField extends StatelessWidget {
         onChanged: onChanged,
         focusNode: focusNode,
         decoration: InputDecoration(
+          contentPadding: isChatText ? EdgeInsets.symmetric(horizontal: 12.w) : null,
           filled: true,
           // ignore: deprecated_member_use
           fillColor: isChatText ? white : grey.withOpacity(0.12),
