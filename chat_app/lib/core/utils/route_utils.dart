@@ -1,5 +1,7 @@
 import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/ui/screens/auth/login/login_screen.dart';
+import 'package:chat_app/ui/screens/auth/signup/email_entry.dart';
+import 'package:chat_app/ui/screens/auth/signup/email_verify.dart';
 import 'package:chat_app/ui/screens/auth/signup/signup_screen.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chatroom/chat_screen.dart';
 import 'package:chat_app/ui/screens/home/home_screen.dart';
@@ -10,16 +12,24 @@ import 'package:chat_app/ui/screens/splash/splash_screen.dart';
 class RouteUtils {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-       case splash:
-        return MaterialPageRoute(builder: (context) => const SplashScreen()); 
+      case splash:
+        return MaterialPageRoute(builder: (context) => const SplashScreen());
+      case emailEntry:
+        return MaterialPageRoute(builder: (context) => EmailEntryScreen());
+      case emailVerify:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final email = args != null ? args['email'] as String : '';
+        return MaterialPageRoute(builder: (context) => EmailVerifyScreen(email: email));
         //auth
-       case login:
+      case login:
         return MaterialPageRoute(builder: (context) => const LoginScreen()); 
-       case signup:
-        return MaterialPageRoute(builder: (context) => const SignUpScreen()); 
+      case signup:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final email = args != null ? args['email'] as String : '';
+        return MaterialPageRoute(builder: (context) => SignUpScreen(email: email));
         //home
-       case home:
-        return MaterialPageRoute(builder: (context) => const HomeScreen());
+      // case home:
+      //   return MaterialPageRoute(builder: (context) => const HomeScreen());
       case wrapper:
         return MaterialPageRoute(builder: (context) => const Wrapper());
         //chat

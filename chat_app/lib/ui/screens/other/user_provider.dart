@@ -17,4 +17,10 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  void clearUser() {
+    _currentUser = null;
+    notifyListeners(); // This is crucial to inform listeners of the change.
+  }
+  
+
 }

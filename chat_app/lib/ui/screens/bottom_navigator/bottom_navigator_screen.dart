@@ -9,7 +9,7 @@ class BottomNavigationsScreen extends StatelessWidget {
   const BottomNavigationsScreen({super.key});
 
   static final List<Widget> _screens = [
-    const Center(child: Text("Home screen")),
+    // const Center(child: Text("Home screen")),
     const ChatsListScreen(),
     const Center(child: Text("profile screen")),
   ];
@@ -17,10 +17,10 @@ class BottomNavigationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = const [
-      BottomNavigationBarItem(
-        label: "",
-        icon: BottomNavButton(iconPath: homeIcon),
-      ),
+      // BottomNavigationBarItem(
+      //   label: "",
+      //   icon: BottomNavButton(iconPath: homeIcon),
+      // ),
       BottomNavigationBarItem(
         label: "",
         icon: BottomNavButton(iconPath: chatsIcon),

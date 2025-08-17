@@ -1,3 +1,4 @@
+import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/core/services/database_service.dart';
 import 'package:chat_app/core/utils/route_utils.dart';
 import 'package:chat_app/ui/screens/other/user_provider.dart';
@@ -7,6 +8,7 @@ import 'package:chat_app/ui/screens/splash/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:chat_app/firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:chat_app/ui/screens/wrapper/wrapper.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +26,8 @@ class ChatApp extends StatelessWidget {
         create: (context) => UserProvider(DatabaseService()),
         child: const MaterialApp(
             onGenerateRoute: RouteUtils.onGenerateRoute,
-            home: SplashScreen()
+            // home: Wrapper(),
+            home: SplashScreen(),
           ),
       ),
     );

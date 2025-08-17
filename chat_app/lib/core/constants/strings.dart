@@ -9,6 +9,8 @@ const login = "/login";
 const signup = "/signup";
 const wrapper = "/wrapper";
 const chatroom = "/chatroom";
+const emailEntry = '/emailEntry';
+const emailVerify = '/emailVerify';
 
 // icons
 const chatsIcon = "assets/chats_icon.png";

@@ -65,7 +65,7 @@ class LoginScreen extends StatelessWidget {
                   children: [Text("Don't have an account?",style: body.copyWith(color: grey)), 
                   InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, signup);
+                      Navigator.pushNamed(context, emailEntry);
                     },
                     child: Text("Sign Up", style: body.copyWith(fontWeight: FontWeight.bold)),
                   )],)
