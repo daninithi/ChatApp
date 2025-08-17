@@ -1,6 +1,7 @@
 import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/ui/screens/auth/login/login_screen.dart';
 import 'package:chat_app/ui/screens/auth/signup/signup_screen.dart';
+import 'package:chat_app/ui/screens/bottom_navigator/bottom_navigator_screen.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chatroom/chat_screen.dart';
 import 'package:chat_app/ui/screens/home/home_screen.dart';
 import 'package:chat_app/ui/screens/wrapper/wrapper.dart';
@@ -18,8 +19,8 @@ class RouteUtils {
        case signup:
         return MaterialPageRoute(builder: (context) => const SignUpScreen()); 
         //home
-      //  case home:
-      //   return MaterialPageRoute(builder: (context) => const HomeScreen());
+       case home:
+        return MaterialPageRoute(builder: (context) => const BottomNavigationsScreen());
       case wrapper:
         return MaterialPageRoute(builder: (context) => const Wrapper());
         //chat
@@ -27,7 +28,7 @@ class RouteUtils {
         return MaterialPageRoute(builder: (context) => const ChatScreen());
 
 
-        default:
+      default:
         return MaterialPageRoute(
           builder: (context) => const Scaffold(
             body: Center(child: Text("No Route Found")),
