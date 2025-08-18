@@ -114,14 +114,20 @@ class ChatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use 
       tileColor: grey.withOpacity(0.12),
       contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 3),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      leading: CircleAvatar(
+      leading: user.imageUrl == null? CircleAvatar(
         backgroundColor: grey,
         radius: 25,
         child: Text(user.name![0].toUpperCase(), style: h2.copyWith(color: white)),
+      ):ClipOval(
+        child: Image.network(user.imageUrl!,
+        height: 50,
+        width: 50,
+        fit: BoxFit.fill,
+        ),
       ),
       title:  Text(user.name!),
       subtitle: const Text(
@@ -129,6 +135,7 @@ class ChatTile extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
+
       trailing: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
