@@ -8,8 +8,11 @@ class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
     this.focusNode,
+    this.controller,
     this.hintText,
     this.onChanged,
+    this.onTap,
+    this.isPassword = false,
     this.isSearch = false,
     this.isChatText = false,
   });
@@ -19,14 +22,19 @@ class CustomTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final bool isSearch;
   final bool isChatText;
+  final TextEditingController? controller;
+  final void Function()? onTap;
+  final bool isPassword;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: isChatText ? 35.h : null,
       child: TextField(
+        controller: controller,
         onChanged: onChanged,
         focusNode: focusNode,
+        obscureText: isPassword,
         decoration: InputDecoration(
           contentPadding: isChatText ? EdgeInsets.symmetric(horizontal: 12.w) : null,
           filled: true,
@@ -43,7 +51,7 @@ class CustomTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(12.r),
             ),
             child: Image.asset(searchIcon),
-          ) : null,
+          ) : isChatText ? InkWell(onTap: onTap, child: Icon(Icons.send)):null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(isChatText ? 25.r : 12.r),
             borderSide: BorderSide.none,

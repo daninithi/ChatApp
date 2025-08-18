@@ -2,6 +2,7 @@ import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/bottom_navigation_viewmodel.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chat_list_screen.dart';
 import 'package:chat_app/ui/screens/plus/plus_screen.dart';
+import 'package:chat_app/ui/screens/other/user_provider.dart';
 import 'package:chat_app/ui/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,7 @@ class BottomNavigationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = Provider.of<UserProvider>(context).user;
     final items = const [
       BottomNavigationBarItem(
         label: "",
@@ -37,7 +39,10 @@ class BottomNavigationsScreen extends StatelessWidget {
       create: (context) => BottomNavigationViewModel(),
       child: Consumer<BottomNavigationViewModel>(
         builder: (context, model, _) {
-          return Scaffold(
+          return currentUser == null ? const Center(
+            child: CircularProgressIndicator(),
+          )  
+          : Scaffold(
             body: BottomNavigationsScreen
                 ._screens[model.currentIndex], // Default to the first screen
             bottomNavigationBar: CustomNavBar(

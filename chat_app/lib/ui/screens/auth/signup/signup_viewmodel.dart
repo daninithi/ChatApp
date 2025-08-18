@@ -44,6 +44,9 @@ class SignUpViewModel extends BaseViewmodel {
   signup() async{
     setstate(ViewState.loading);
     try {
+      if(_password == _confirmPassword) {
+        throw Exception("Passwords do not match");
+      }
       final res = await _auth.signup(_email, _password);
       if(res != null) {
         UserModel user = UserModel(uid: res.uid, name: _name, email: _email);
