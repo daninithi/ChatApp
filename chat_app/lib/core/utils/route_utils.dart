@@ -1,4 +1,5 @@
 import 'package:chat_app/core/constants/strings.dart';
+import 'package:chat_app/core/models/user.dart';
 import 'package:chat_app/ui/screens/auth/login/login_screen.dart';
 import 'package:chat_app/ui/screens/auth/signup/email_entry.dart';
 import 'package:chat_app/ui/screens/auth/signup/email_verify.dart';
@@ -12,6 +13,7 @@ import 'package:chat_app/ui/screens/splash/splash_screen.dart';
 
 class RouteUtils {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
+    final args = settings.arguments;
     switch (settings.name) {
       case splash:
         return MaterialPageRoute(builder: (context) => const SplashScreen());
@@ -35,7 +37,7 @@ class RouteUtils {
         return MaterialPageRoute(builder: (context) => const Wrapper());
         //chat
       case chatroom:
-        return MaterialPageRoute(builder: (context) => const ChatScreen());
+        return MaterialPageRoute(builder: (context) => ChatScreen(receiver: args as UserModel,));
 
 
       default:

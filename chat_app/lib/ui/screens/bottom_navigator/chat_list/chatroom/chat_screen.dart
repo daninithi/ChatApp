@@ -1,46 +1,70 @@
 import 'package:chat_app/core/constants/colors.dart';
 import 'package:chat_app/core/constants/styles.dart';
+import 'package:chat_app/core/extension/widget_extension.dart';
+import 'package:chat_app/core/models/user.dart';
+import 'package:chat_app/core/services/chat_service.dart';
+import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chatroom/chat_viewmodel.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chatroom/chat_widgets.dart';
+import 'package:chat_app/ui/screens/other/user_provider.dart';
 import 'package:chat_app/ui/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+  const ChatScreen({super.key, required this.receiver});
+  final UserModel receiver;  
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.sw *0.05, vertical: 25.h),
-              child: Column(
-                children: [
-                  35.verticalSpace,
-                _BuildHeader(context, name: "John Doe"),
+    final currentUser = Provider.of<UserProvider>(context).user;
+    return ChangeNotifierProvider(
+      create: (context) => ChatViewmodel(ChatService(), currentUser!, receiver),
+      child: Consumer<ChatViewmodel>(
+        builder: (context, model, _) {
+          return Scaffold(
+            body: Column(
+              children: [
                 Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(10),
-                    itemCount: 5,
-                    separatorBuilder: (context, index) => 10.verticalSpace,
-                    itemBuilder: (context, index) =>ChatBubble(
-                      isCurrentUser: false,
-                    ),
-                   
+                  child: 
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 1.sw *0.05, vertical: 25.h),
+                    child: Column(
+                      children: [
+                        35.verticalSpace,
+                      _BuildHeader(context, name: receiver.name!),
+                      Expanded(
+                        child: ListView.separated(
+                          padding: const EdgeInsets.all(10),
+                          itemCount: model.messages.length,
+                          separatorBuilder: (context, index) => 10.verticalSpace,
+                          itemBuilder: (context, index)  { 
+                            final message = model.messages[index];
+                            return ChatBubble(
+                            isCurrentUser: message.senderId == currentUser!.uid,
+                            message: message,
+                          );},
+                        ),
+                      )
+                    ],
+                   ),
                   ),
                 ),
+                BottomFeild(
+                  controller: model.controller,
+                  onTap: () async{
+                    try {
+                      await model.saveMessage();
+                    } catch (e) {
+                      context.showSnackBar(e.toString());
+                    }
+
+                  },
+                ),
               ],
-             ),
             ),
-          ),
-          BottomFeild(
-            onTap: () {},
-            onChanged: (value) {},
-          ),
-        ],
+          );
+        }
       ),
     );
   }

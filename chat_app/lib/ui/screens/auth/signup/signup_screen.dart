@@ -42,11 +42,13 @@ class SignUpScreen extends StatelessWidget {
                   CustomTextField(
                     hintText: "Enter your password",
                     onChanged: modal.setPassword,
+                    isPassword: true,
                   ),
                   20.verticalSpace,
                   CustomTextField(
                     hintText: "Confirm your password",
                     onChanged: modal.setConfirmPassword,
+                    isPassword: true,
                   ),
                   30.verticalSpace,
                   CustomButton(

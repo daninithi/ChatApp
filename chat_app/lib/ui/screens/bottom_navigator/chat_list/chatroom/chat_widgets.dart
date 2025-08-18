@@ -1,16 +1,19 @@
 import 'package:chat_app/core/constants/colors.dart';
 import 'package:chat_app/core/constants/styles.dart';
+import 'package:chat_app/core/models/message.dart';
 import 'package:chat_app/ui/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class BottomFeild extends StatelessWidget {
   const BottomFeild({
-    super.key, this.onTap, this.onChanged
+    super.key, this.onTap, this.onChanged, this.controller
   });
 
 final void Function()? onTap;
 final void Function(String)? onChanged;
+final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ final void Function(String)? onChanged;
       child:  Row(
         children: [
          InkWell(
-          onTap: onTap,
+          onTap: null,
            child: CircleAvatar(
             radius: 20.r,
             backgroundColor: white,
@@ -33,9 +36,11 @@ final void Function(String)? onChanged;
         Expanded(
           child: 
           CustomTextField(
+            controller: controller,
             isChatText: true,
             hintText: "Type a message",
             onChanged: onChanged,
+            onTap: onTap,
           ),
         )
       ],
@@ -46,10 +51,11 @@ final void Function(String)? onChanged;
 
 class ChatBubble extends StatelessWidget {
   const ChatBubble({
-    super.key, this.isCurrentUser = true
+    super.key, this.isCurrentUser = true, required this.message
   });
 
   final bool isCurrentUser;
+  final Message message;
 
 
   @override
@@ -80,14 +86,14 @@ class ChatBubble extends StatelessWidget {
           crossAxisAlignment: isCurrentUser? CrossAxisAlignment.start : CrossAxisAlignment.end,
           children: [
             Text(
-              "Hello, how are you ?",
+              message.content!,
               style: body.copyWith(
                 color: isCurrentUser ? white : null,
               ),
             ),
             5.verticalSpace,
-           Text(
-              "08.00pm",
+            Text(
+              DateFormat('hh:mm a').format(message.timestamp!),
               style: small.copyWith(
                 color: isCurrentUser? white: null,
               ),
