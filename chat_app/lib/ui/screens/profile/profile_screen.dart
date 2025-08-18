@@ -17,47 +17,63 @@ class ProfileScreen extends StatelessWidget {
       child: Consumer<ProfileViewmodel>(
         builder: (context, model, _) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Profile')),
             body: Center(
               child: userProvider.user == null
                   ? const CircularProgressIndicator()
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        CircleAvatar(
-                                  radius: 48,
-                                  backgroundColor: Colors.grey,
-                                  child: Text(
-                                    userProvider.user!.name?.isNotEmpty == true
-                                        ? userProvider.user!.name![0].toUpperCase()
-                                        : '',
-                                    style: const TextStyle(
-                                      fontSize: 40,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                        const SizedBox(height: 40),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: CircleAvatar(
+                                radius: 40,
+                                backgroundColor: Colors.grey[300],
+                                child: Text(
+                                  userProvider.user!.name?.isNotEmpty == true
+                                      ? userProvider.user!.name![0]
+                                            .toUpperCase()
+                                      : '',
+                                  style: const TextStyle(
+                                    fontSize: 32,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 24),
+                              ),
+                            ),
+                            const SizedBox(width: 24),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  userProvider.user!.name ?? '',
+                                  'Name : ${userProvider.user!.name ?? ''}',
                                   style: const TextStyle(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  userProvider.user!.email ?? '',
+                                  'Email : ${userProvider.user!.email ?? ''}',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     color: Colors.grey[700],
                                   ),
                                 ),
-                        const SizedBox(height: 50),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 40),
                         SizedBox(
-                          width: 400, // Set your desired width
+                          width: 160,
                           child: CustomButton(
                             text: 'Log Out',
                             onPressed: () {

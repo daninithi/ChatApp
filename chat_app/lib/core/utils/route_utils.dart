@@ -1,4 +1,6 @@
 import 'package:chat_app/core/constants/strings.dart';
+import 'package:chat_app/ui/screens/Qr/QR_gen/Qr_gen_screen.dart';
+import 'package:chat_app/ui/screens/Qr/qr_system/Qr_system_screen.dart';
 import 'package:chat_app/ui/screens/auth/login/login_screen.dart';
 import 'package:chat_app/ui/screens/auth/signup/email_entry.dart';
 import 'package:chat_app/ui/screens/auth/signup/email_verify.dart';
@@ -36,7 +38,10 @@ class RouteUtils {
         //chat
       case chatroom:
         return MaterialPageRoute(builder: (context) => const ChatScreen());
-
+      case qrSystem:
+        return MaterialPageRoute(builder: (context) => const QRSystemScreen());
+      // case qrGenerate:
+      //   return MaterialPageRoute(builder: (context) => const QRGenerateScreen());
 
       default:
         return MaterialPageRoute(

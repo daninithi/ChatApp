@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChatsListScreen extends StatelessWidget {
   const ChatsListScreen({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +15,7 @@ class ChatsListScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 1.sw * 0.05),
       child:  Column(
         children: [
-          30.verticalSpace,
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text("chats", style: h),
-          ),
-          20.verticalSpace,
+          50.verticalSpace,
           const CustomTextField(
             isSearch: true,
             hintText: "search here",

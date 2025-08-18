@@ -71,7 +71,7 @@ class ChatScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8.r),
               // ignore: deprecated_member_use
               color: grey.withOpacity(0.15),
-            ), 
+            ),
             child: const Icon(Icons.more_vert),
           ),
 
