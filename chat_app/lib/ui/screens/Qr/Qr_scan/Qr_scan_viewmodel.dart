@@ -20,10 +20,18 @@ class QRScanViewModel extends BaseViewmodel {
       _isProcessing = true;
       notifyListeners();
 
-      // Load user data from database
+      // Load scanned user's data from database
       final userData = await _db.loadUser(scannedUserId);
       if (userData != null) {
         final scannedUser = UserModel.fromMap(userData);
+        
+        // Get the current user's data from Firebase Auth
+        final currentUserData = await _db.loadUser(scannedUser.uid!);
+        if (currentUserData != null) {
+          // Create initial chat message or conversation record between users
+          await _db.createInitialChat(currentUserData['uid'], scannedUserId);
+        }
+        
         return scannedUser;
       }
       return null;

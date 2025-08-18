@@ -26,31 +26,34 @@ class DatabaseService {
     }
   }
 
-  // New method to save a searched user to a new collection
-  Future<void> saveSearchedUser(String currentUserUid, String searchedUserUid) async {
-    try {
-      // You can use a subcollection for each user to store their searched contacts
-      await _fire
-          .collection('users')
-          .doc(currentUserUid)
-          .collection('searchedContacts')
-          .doc(searchedUserUid)
-          .set({'uid': searchedUserUid, 'timestamp': FieldValue.serverTimestamp()});
-      log("Searched user $searchedUserUid saved for user $currentUserUid");
-    } catch (e) {
-      log("Error saving searched user: $e");
-      rethrow;
-    }
-  }
-
-  // New method to get all searched users for the current user
-  Stream<QuerySnapshot> getSearchedUsers(String currentUserUid) {
+  // Method to get all chat users for the current user (users with messages)
+  Stream<QuerySnapshot> getChatUsers(String currentUserUid) {
     return _fire
-        .collection('users')
-        .doc(currentUserUid)
-        .collection('searchedContacts')
-        .orderBy('timestamp', descending: true)
+        .collection('chats')
+        .where('participants', arrayContains: currentUserUid)
+        .orderBy('lastMessageTime', descending: true)
         .snapshots();
   }
 
+  // Create an initial chat record between two users
+  Future<void> createInitialChat(String user1Id, String user2Id) async {
+    try {
+      // Sort IDs to ensure consistent chat ID
+      final List<String> sortedIds = [user1Id, user2Id]..sort();
+      final String chatId = '${sortedIds[0]}_${sortedIds[1]}';
+
+      // Create or update the chat document
+      await _fire.collection('chats').doc(chatId).set({
+        'participants': [user1Id, user2Id],
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastMessageTime': FieldValue.serverTimestamp(),
+        'lastMessage': null
+      }, SetOptions(merge: true));
+
+      log('Created initial chat between $user1Id and $user2Id');
+    } catch (e) {
+      log('Error creating initial chat: $e');
+      rethrow;
+    }
+  }
 }

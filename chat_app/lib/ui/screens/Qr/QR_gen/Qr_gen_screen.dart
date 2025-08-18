@@ -16,12 +16,6 @@ class QRScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('My QR Code', style: h),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.qr_code_scanner),
-            onPressed: () => Navigator.pushNamed(context, 'qrScanner'),
-          ),
-        ],
       ),
       body: Center(
         child: Column(

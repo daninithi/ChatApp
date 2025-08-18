@@ -6,7 +6,7 @@ import 'package:chat_app/core/models/user.dart';
 import 'package:chat_app/core/services/database_service.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chat_list_viewmodel.dart';
 import 'package:chat_app/ui/screens/other/user_provider.dart';
-import 'package:chat_app/ui/widgets/textfield_widget.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -19,20 +19,13 @@ class ChatsListScreen extends StatefulWidget {
 
 class _ChatsListScreenState extends State<ChatsListScreen> {
   // int _userCount = 0;
-  final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final currentUser = Provider.of<UserProvider>(context).user;
     return  ChangeNotifierProvider(
       create: (context) => ChatListViewmodel(DatabaseService(), currentUser!),
       child: Consumer<ChatListViewmodel>(
+        // ignore: deprecated_member_use
         builder: (context, model, _) {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 1.sw * 0.05),
@@ -41,52 +34,20 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                 30.verticalSpace,
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("chats", style: h),
+                  child: Text("Chats", style: h),
                 ),
                 20.verticalSpace,
-                CustomTextField(
-                  isSearch: true,
-                  hintText: "search here",
-                  onChanged: model.search,
-                ),
-                10.verticalSpace,
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12.w),
-                    filled: true,
-                    // ignore: deprecated_member_use
-                    fillColor: grey.withOpacity(0.12),
-                    hintText: "search by user ID",
-                    hintStyle: body.copyWith(color: grey),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                10.verticalSpace,
-                ElevatedButton(
-                  onPressed: () {
-                    // Check if the search field is not empty before fetching
-                    if (_searchController.text.isNotEmpty) {
-                      model.fetchUserById(_searchController.text.trim());
-                    }
-                  },
-                  child: const Text('Search User'),
-                ),
-                10.verticalSpace,
                 model.state == ViewState.loading 
-                  ? Expanded(child: const Center(child: CircularProgressIndicator()))
+                  ? const Expanded(child: Center(child: CircularProgressIndicator()))
                   : model.chatUsers.isEmpty
-                    ? const Center(child: Text("No chats available"))
+                    ? const Expanded(child: Center(child: Text("No chats yet. Scan a QR code to start chatting!")))
                     : Expanded(
                       child: ListView.separated(
                         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                        itemCount: model.filteredUsers.length,
+                        itemCount: model.chatUsers.length,
                         separatorBuilder: (context, index) => 8.verticalSpace,
                         itemBuilder: (context, index) {
-                          final user = model.filteredUsers[index];
+                          final user = model.chatUsers[index];
                           return ChatTile(
                             user: user,
                             onTap: () => Navigator.pushNamed(context, chatroom, arguments: user));
