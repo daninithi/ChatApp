@@ -6,7 +6,6 @@ import 'package:chat_app/core/services/chat_service.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chatroom/chat_viewmodel.dart';
 import 'package:chat_app/ui/screens/bottom_navigator/chat_list/chatroom/chat_widgets.dart';
 import 'package:chat_app/ui/screens/other/user_provider.dart';
-import 'package:chat_app/ui/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
