@@ -1,5 +1,3 @@
-import 'package:chat_app/core/constants/colors.dart';
-import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/core/constants/styles.dart';
 import 'package:chat_app/core/enums/enums.dart';
 import 'package:chat_app/core/extension/widget_extension.dart';

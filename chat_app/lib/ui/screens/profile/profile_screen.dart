@@ -77,8 +77,8 @@ class ProfileScreen extends StatelessWidget {
                           child: CustomButton(
                             text: 'Log Out',
                             onPressed: () {
+                              Provider.of<UserProvider>(context,listen: false).clearUser();
                               AuthService().logout();
-                              Provider.of<UserProvider>(context).clearUser();
                             },
                           ),
                         ),

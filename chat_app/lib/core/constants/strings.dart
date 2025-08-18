@@ -13,6 +13,7 @@ const emailEntry = '/emailEntry';
 const emailVerify = '/emailVerify';
 const qrSystem = '/qr-system';
 const qrGenerate = '/qrGenerate';
+const qrScan = '/qrScan';
 
 // icons
 const chatsIcon = "assets/chats_icon.png";

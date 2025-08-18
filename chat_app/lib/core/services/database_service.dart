@@ -25,16 +25,32 @@ class DatabaseService {
       rethrow;
     }
   }
-    Future<List<Map<String, dynamic>>?> fetchUsers(String currentUserId) async {
-    try {
-      final res = await _fire
-          .collection("users")
-          .where("uid", isNotEqualTo: currentUserId)
-          .get();
 
-      return res.docs.map((e) => e.data()).toList();
+  // New method to save a searched user to a new collection
+  Future<void> saveSearchedUser(String currentUserUid, String searchedUserUid) async {
+    try {
+      // You can use a subcollection for each user to store their searched contacts
+      await _fire
+          .collection('users')
+          .doc(currentUserUid)
+          .collection('searchedContacts')
+          .doc(searchedUserUid)
+          .set({'uid': searchedUserUid, 'timestamp': FieldValue.serverTimestamp()});
+      log("Searched user $searchedUserUid saved for user $currentUserUid");
     } catch (e) {
+      log("Error saving searched user: $e");
       rethrow;
     }
   }
+
+  // New method to get all searched users for the current user
+  Stream<QuerySnapshot> getSearchedUsers(String currentUserUid) {
+    return _fire
+        .collection('users')
+        .doc(currentUserUid)
+        .collection('searchedContacts')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+
 }

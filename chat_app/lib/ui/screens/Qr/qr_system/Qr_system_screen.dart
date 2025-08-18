@@ -1,4 +1,5 @@
 import 'package:chat_app/core/constants/strings.dart';
+import 'package:chat_app/ui/screens/Qr/Qr_scan/Qr_scan_screen.dart';
 import 'package:chat_app/ui/screens/Qr/qr_system/Qr_system_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,33 +31,6 @@ class QRSystemScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 24),
-                      // QR System Icon
-                      // Container(
-                      //   height: 120,
-                      //   width: 120,
-                      //   // decoration: BoxDecoration(
-                      //   //   // gradient: const LinearGradient(
-                      //   //   //   colors: [Color(0xFF4A4A4A), Color(0xFF2C2C2C)],
-                      //   //   //   begin: Alignment.topLeft,
-                      //   //   //   end: Alignment.bottomRight,
-                      //   //   // ),
-                      //   //   shape: BoxShape.circle,
-                      //   //   boxShadow: [
-                      //   //     BoxShadow(
-                      //   //       color: Colors.black.withOpacity(0.4),
-                      //   //       blurRadius: 12,
-                      //   //       offset: const Offset(0, 6),
-                      //   //     ),
-                      //   //   ],
-                      //   // ),
-                      //   child: const Center(
-                      //     child: Icon(
-                      //       Icons.qr_code_rounded,
-                      //       size: 60,
-                      //       color: Colors.white,
-                      //     ),
-                      //   ),
-                      // ),
                       const SizedBox(height: 32),
                       const Text(
                         "QR Code System",
@@ -146,7 +120,7 @@ class QRSystemScreen extends StatelessWidget {
                               child: InkWell(
                                 onTap: () {
                                   model.setLoading(true);
-                                  Navigator.pushNamed(context, '/qr-scan');
+                                  Navigator.pushNamed(context, qrScan);
                                   model.setLoading(false);
                                 },
                                 borderRadius: BorderRadius.circular(16),

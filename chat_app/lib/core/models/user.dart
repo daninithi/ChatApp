@@ -7,7 +7,7 @@ class UserModel {
   final String? email;
   final String? imageUrl;
   final Map<String, dynamic>? lastMessage;
-  // final int? unreadCounter;
+  final int? unreadCounter;
 
   UserModel(
       {this.uid,
@@ -15,7 +15,7 @@ class UserModel {
       this.email,
       this.imageUrl,
       this.lastMessage,
-      // this.unreadCounter
+      this.unreadCounter
       });
 
   Map<String, dynamic> toMap() {
@@ -25,7 +25,7 @@ class UserModel {
       'email': email,
       'imageUrl': imageUrl,
       'lastMessage': lastMessage,
-      // 'unreadCounter': unreadCounter
+      'unreadCounter': unreadCounter
     };
   }
 
@@ -40,8 +40,8 @@ class UserModel {
           ? Map<String, dynamic>.from(
               map['lastMessage'] as Map<String, dynamic>)
           : null,
-      // unreadCounter:
-      //     map['unreadCounter'] != null ? map['unreadCounter'] as int : null,
+      unreadCounter:
+          map['unreadCounter'] != null ? map['unreadCounter'] as int : null,
     );
   }
 

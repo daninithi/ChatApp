@@ -124,8 +124,8 @@ class ChatTile extends StatelessWidget {
         child: Text(user.name![0].toUpperCase(), style: h2.copyWith(color: white)),
       ),
       title:  Text(user.name!),
-      subtitle: const Text(
-        "last message",
+      subtitle: Text(
+        user.lastMessage != null ? user.lastMessage!["content"] : "",
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -134,20 +134,44 @@ class ChatTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            "15 min ago",
+            user.lastMessage == null ? "" : getTime(),
             style: TextStyle(color: grey),
           ),
           10.verticalSpace,
-          CircleAvatar(
+          user.unreadCounter == 0 || user.unreadCounter == null ? SizedBox(height:15,) :  CircleAvatar(
             radius: 9.r,
             backgroundColor: Primary,
             child: Text(
-              "1",
+              "${user.unreadCounter}",
               style: small.copyWith(color: white),
             ),
           )
         ],
       ),
     );
+  }
+
+   String getTime() {
+    if (user.lastMessage == null) {
+      return "";
+    }
+
+    DateTime lastMessageTime = DateTime.fromMillisecondsSinceEpoch(user.lastMessage!["timestamp"]);
+    Duration difference = DateTime.now().difference(lastMessageTime);
+
+    if (difference.inMinutes < 1) {
+      return "Just now";
+    } else if (difference.inHours < 1) {
+      int minutes = difference.inMinutes;
+      return "$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago";
+    } else if (difference.inDays < 1) {
+      int hours = difference.inHours;
+      return "$hours ${hours == 1 ? 'hour' : 'hours'} ago";
+    } else if (difference.inDays < 7) {
+      int days = difference.inDays;
+      return "$days ${days == 1 ? 'day' : 'days'} ago";
+    } else {
+      return "${lastMessageTime.day}/${lastMessageTime.month}/${lastMessageTime.year}";
+    }
   }
 }

@@ -17,6 +17,15 @@ class Wrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         final user = snapshot.data;
+
+        // if (snapshot.connectionState == ConnectionState.waiting) {
+        //   return const Center(child: CircularProgressIndicator());
+        // }
+        
+        // if (snapshot.hasError) {
+        //   return const Center(child: Text("Something went wrong!"));
+        // }
+
         if (user == null) {
           return const LoginScreen();
         } else {
