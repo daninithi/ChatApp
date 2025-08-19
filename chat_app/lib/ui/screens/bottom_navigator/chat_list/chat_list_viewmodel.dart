@@ -1,57 +1,59 @@
-import 'dart:async';
+// chat_list_viewmodel.dart
+
 import 'dart:developer';
+
 import 'package:chat_app/core/enums/enums.dart';
 import 'package:chat_app/core/models/user.dart';
+import 'package:chat_app/core/others/base_viewmodel.dart';
 import 'package:chat_app/core/services/database_service.dart';
-import 'package:flutter/material.dart';
 
-class ChatListViewmodel extends ChangeNotifier {
-  final DatabaseService _dbService;
-  final UserModel _currentUser;
-  StreamSubscription? _chatUsersSubscription;
+class ChatListViewmodel extends BaseViewmodel {
+  final DatabaseService _db;
+  final UserModel currentUser;
 
-  ViewState _state = ViewState.idle;
-  ViewState get state => _state;
+  ChatListViewmodel(this._db, this.currentUser);
 
   List<UserModel> _chatUsers = [];
   List<UserModel> get chatUsers => _chatUsers;
 
-  ChatListViewmodel(this._dbService, this._currentUser) {
-    _loadChatUsers();
-  }
+  List<UserModel> _filteredUsers = [];
+  List<UserModel> get filteredUsers => _filteredUsers;
 
-  void _loadChatUsers() {
-    _setState(ViewState.loading);
-    
-    _chatUsersSubscription?.cancel();
-    _chatUsersSubscription = _dbService.getChatUsers(_currentUser.uid!).listen((snapshot) async {
-      _chatUsers.clear();
-      for (var doc in snapshot.docs) {
-        final userData = await _dbService.loadUser(doc.id);
-        if (userData != null) {
-          final user = UserModel.fromMap(userData);
-          if (user.uid != _currentUser.uid) {
-            _chatUsers.add(user);
-          }
-        }
+
+  // This method will add users to the list
+  fetchUserById(String userId) async {
+    if (_chatUsers.any((user) => user.uid == userId)) {
+      log("User with ID $userId is already in the list.");
+      return;
+    }
+
+    try {
+      setstate(ViewState.loading);
+      
+      final userData = await _db.loadUser(userId);
+      if (userData != null) {
+        final newUser = UserModel.fromMap(userData);
+        _chatUsers.add(newUser); // Add the new user to the list
+        _filteredUsers = _chatUsers; // Update filtered users to include all chat users
+        log("Added user with ID: $userId to the chat list. Total users: ${_chatUsers.length}");
+      } else {
+        log("No user found with ID: $userId");
       }
+
       notifyListeners();
-      _setState(ViewState.idle);
-    }, onError: (error) {
-      _setState(ViewState.idle);
-      log("Error fetching searched users: $error");
-    });
+      setstate(ViewState.idle);
+    } catch (e) {
+      setstate(ViewState.idle);
+      log(e.toString());
+      rethrow;
+    }
   }
 
-  void _setState(ViewState state) {
-    _state = state;
+  search(String value) {
+    _filteredUsers =
+        _chatUsers.where((e) => e.name!.toLowerCase().contains(value)).toList();
     notifyListeners();
-  }
+  } 
 
-  // Method to fetch a user by their ID
-  @override
-  void dispose() {
-    _chatUsersSubscription?.cancel();
-    super.dispose();
-  }
 }
+
