@@ -1,5 +1,6 @@
 import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/ui/screens/other/user_provider.dart';
+import 'package:chat_app/core/models/user.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +71,17 @@ class PlusScreen extends StatelessWidget {
                         style: TextStyle(color: Colors.black54),
                       ),
                       onTap: () {
-                        Navigator.pop(context);
+                        // Construct UserModel for chat screen
+                        final userModel = UserModel(
+                          uid: contact['uid'],
+                          name: contact['name'],
+                          imageUrl: contact['imageUrl'],
+                        );
+                        Navigator.pushNamed(
+                          context,
+                          chatroom,
+                          arguments: userModel,
+                        );
                       },
                       onLongPress: () async {
                         final contactId = contacts[index - 2].id;
@@ -88,16 +99,27 @@ class PlusScreen extends StatelessWidget {
                               ),
                               TextButton(
                                 onPressed: () async {
+                                  // Delete from current user's contacts
                                   await FirebaseFirestore.instance
                                       .collection('contacts')
                                       .doc(currentUser.uid)
                                       .collection('userContacts')
                                       .doc(contactId)
                                       .delete();
+                                  // Delete from other user's contacts
+                                  final otherUid = contact['uid'];
+                                  await FirebaseFirestore.instance
+                                      .collection('contacts')
+                                      .doc(otherUid)
+                                      .collection('userContacts')
+                                      .doc(currentUser.uid)
+                                      .delete();
                                   Navigator.of(context).pop();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Contact deleted!'),
+                                      content: Text(
+                                        'Contact deleted for both users!',
+                                      ),
                                     ),
                                   );
                                 },

@@ -10,6 +10,7 @@ import 'package:chat_app/core/services/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key, required this.receiver});
@@ -149,57 +150,97 @@ class ChatScreen extends StatelessWidget {
         15.verticalSpace,
         Text(name, style: h.copyWith(fontSize: 20.sp)),
         const Spacer(),
-        // Person+ icon with tap
-        InkWell(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Contact Request'),
-                  content: const Text(
-                    'Do you want to send a contact request to the receiver?',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        final currentUser = Provider.of<UserProvider>(
-                          context,
-                          listen: false,
-                        ).user;
-                        final receiver = this.receiver;
-                        await DatabaseService().sendContactRequest(
-                          senderUid: currentUser!.uid!,
-                          senderName: currentUser.name ?? '',
-                          receiverUid: receiver.uid!,
-                        );
-                        Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Contact request sent!'),
-                          ),
-                        );
-                      },
-                      child: const Text('Send'),
+        // Show tick with person icon if already contacts, else show person+ icon
+        FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance
+              .collection('contacts')
+              .doc(Provider.of<UserProvider>(context, listen: false).user!.uid)
+              .collection('userContacts')
+              .doc(receiver.uid)
+              .get(),
+          builder: (context, snapshot) {
+            final isContact = snapshot.data?.exists ?? false;
+            if (isContact) {
+              return Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  color: grey.withOpacity(0.15),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Icon(Icons.person, size: 28),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 16,
+                      ),
                     ),
                   ],
-                );
-              },
-            );
+                ),
+              );
+            } else {
+              return InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Contact Request'),
+                        content: const Text(
+                          'Do you want to send a contact request to the receiver?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              final currentUser = Provider.of<UserProvider>(
+                                context,
+                                listen: false,
+                              ).user;
+                              final receiver = this.receiver;
+                              await DatabaseService().sendContactRequest(
+                                senderUid: currentUser!.uid!,
+                                senderName: currentUser.name ?? '',
+                                receiverUid: receiver.uid!,
+                              );
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Contact request sent!'),
+                                ),
+                              );
+                            },
+                            child: const Text('Send'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: grey.withOpacity(0.15),
+                  ),
+                  child: const Icon(Icons.person_add_alt_1),
+                ),
+              );
+            }
           },
-          child: Container(
-            margin: const EdgeInsets.only(right: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              color: grey.withOpacity(0.15),
-            ),
-            child: const Icon(Icons.person_add_alt_1),
-          ),
         ),
         // 3-dot icon
         Container(

@@ -5,6 +5,7 @@ import 'package:chat_app/core/enums/enums.dart';
 import 'package:chat_app/core/extension/widget_extension.dart';
 import 'package:chat_app/core/services/auth_service.dart';
 import 'package:chat_app/ui/screens/auth/login/login_viewmodel.dart';
+import 'package:chat_app/ui/screens/other/user_provider.dart';
 import 'package:chat_app/ui/widgets/button_widget.dart';
 import 'package:chat_app/ui/widgets/textfield_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -49,8 +50,12 @@ class LoginScreen extends StatelessWidget {
                       : () async{
                       try {
                         await modal.login();
-                        context.showSnackBar("Login successfully");
-                        Navigator.pushNamed(context, home);
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user != null) {
+                            Provider.of<UserProvider>(context, listen: false).loadUser(user.uid);
+                          }
+                          context.showSnackBar("Login successfully");
+                          Navigator.pushNamed(context, home);
                       } 
                       on FirebaseAuthException catch (e) {
                         context.showSnackBar(e.toString());

@@ -80,7 +80,7 @@ class ProfileScreen extends StatelessWidget {
                             onPressed: () {
                               AuthService().logout();
                               Provider.of<UserProvider>(context, listen: false).clearUser();
-                              //  Navigator.of(context).pushReplacementNamed(login); // or splash, or your login route
+                               Navigator.of(context).pushReplacementNamed(login); // or splash, or your login route
                             },
                           ),
                         ),
