@@ -1,3 +1,4 @@
+import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/core/services/auth_service.dart';
 import 'package:chat_app/core/services/database_service.dart';
 import 'package:chat_app/ui/screens/profile/profile_viewmodel.dart';
@@ -78,7 +79,8 @@ class ProfileScreen extends StatelessWidget {
                             text: 'Log Out',
                             onPressed: () {
                               AuthService().logout();
-                              Provider.of<UserProvider>(context).clearUser();
+                              Provider.of<UserProvider>(context, listen: false).clearUser();
+                              //  Navigator.of(context).pushReplacementNamed(login); // or splash, or your login route
                             },
                           ),
                         ),
