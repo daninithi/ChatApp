@@ -1,8 +1,9 @@
 import 'dart:developer';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final _fire = FirebaseFirestore.instance;
 
   Future<void> saveUser(Map<String, dynamic> userData) async {
@@ -55,5 +56,49 @@ class DatabaseService {
       log('Error creating initial chat: $e');
       rethrow;
     }
+  }
+
+  // New method to create a temporary chat
+  Future<void> createTemporaryChat(String currentUserUid, String scannedUserUid) async {
+    try {
+      // Create a unique chat ID by combining and sorting the UIDs
+      List<String> userUids = [currentUserUid, scannedUserUid];
+      userUids.sort(); // Sort to ensure the chat ID is consistent regardless of who scanned whom
+      String chatId = userUids.join('_');
+
+      // Check if a chat already exists to avoid duplication
+      DocumentSnapshot chatDoc = await _fire.collection('temporary_chats').doc(chatId).get();
+
+      if (!chatDoc.exists) {
+        // Create the new temporary chat document
+        await _fire.collection('temporary_chats').doc(chatId).set({
+          'participants': [currentUserUid, scannedUserUid],
+          'lastMessage': '',
+          'lastMessageTimestamp': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+        log('Temporary chat created with ID: $chatId');
+      } else {
+        log('Temporary chat with ID: $chatId already exists.');
+      }
+    } catch (e) {
+      log('Error creating temporary chat: $e');
+      rethrow; // Re-throw the error so it can be caught in the ViewModel
+    }
+  }
+
+  // You will also need a method to get the current user's UID
+  String? getCurrentUserUid() {
+    return _auth.currentUser?.uid;
+  }
+
+
+  // In your recent chats ViewModel or Page
+  Stream<QuerySnapshot> getTemporaryChats(String currentUserId) {
+    return FirebaseFirestore.instance
+        .collection('temporary_chats')
+        .where('participants', arrayContains: currentUserId)
+        .orderBy('lastMessageTimestamp', descending: true)
+        .snapshots();
   }
 }

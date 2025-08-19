@@ -55,4 +55,24 @@ class UserModel {
     // return 'UserModel(uid: $uid, name: $name, email: $email, imageUrl: $imageUrl, lastMessage: $lastMessage, unreadCounter: $unreadCounter)';
     return 'UserModel(uid: $uid, name: $name, email: $email, imageUrl: $imageUrl, lastMessage: $lastMessage)';
   }
+
+  // Add this copyWith method
+  UserModel copyWith({
+    String? uid,
+    String? name,
+    String? email,
+    String? profileImageUrl,
+    String? status,
+    Map<String, dynamic>? lastMessage,
+    int? unreadCounter,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      imageUrl: imageUrl ?? this.imageUrl,
+      lastMessage: lastMessage ?? this.lastMessage,
+      unreadCounter: unreadCounter ?? this.unreadCounter,
+    );
+}
 }
