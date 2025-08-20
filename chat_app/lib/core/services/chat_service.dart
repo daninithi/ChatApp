@@ -33,7 +33,17 @@ class ChatService {
           "timestamp": timestamp,
           "senderId": currentUid,
         },
-        "unreadCounter": 0
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+      // New function to reset the unread counter when a user views the chat
+    Future<void> resetUnreadCounter(String userUid) async {
+    try {
+      await _fire.collection("users").doc(userUid).update({
+        "unreadCounter": 0,
       });
     } catch (e) {
       rethrow;

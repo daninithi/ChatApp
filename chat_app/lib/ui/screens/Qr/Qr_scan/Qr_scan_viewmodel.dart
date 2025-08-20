@@ -1,36 +1,100 @@
+// import 'package:chat_app/core/models/user.dart';
+// import 'package:chat_app/core/others/base_viewmodel.dart';
+// import 'package:chat_app/core/services/database_service.dart';
 // import 'package:flutter/material.dart';
-// import 'dart:convert';
 
+// class QRScanViewModel extends BaseViewmodel {
+//   final DatabaseService _db = DatabaseService();
+  
+//   bool _isProcessing = false;
+//   bool get isProcessing => _isProcessing;
 
-// class QRScanViewModel extends ChangeNotifier {
-//   bool isProcessing = false;
+//   void setLoading(bool value) {
+//     _isProcessing = value;
+//     notifyListeners();
+//   }
 
-//   Future<User?> processScan(String raw, BuildContext context) async {
+//   Future<UserModel?> processScanResult(String scannedUserId) async {
 //     try {
-//       final Map<String, dynamic> data = jsonDecode(raw);
-//       if (data.containsKey('email') && data['email'] is String) {
-//         final scannedUserUuid = data['uuid'] as String?;
-//         final scannedUserEmail = data['email'] as String;
-//         final scannedUserName = data['name'] as String?;
+//       setLoading(true);
+//       _isProcessing = true;
+//       notifyListeners();
 
-//         if (scannedUserUuid != null && scannedUserName != null) {
-//           final now = DateTime.now().toIso8601String();
-//           final newUser = User(
-//             uuid: scannedUserUuid,
-//             email: scannedUserEmail,
-//             name: scannedUserName,
-//             createdAt: now,
-//             updatedAt: now,
-//           );
-
-//           final repo = Repository();
-//           await repo.insertUser(newUser);
-//           return newUser;
+//       // Load scanned user's data from database
+//       final userData = await _db.loadUser(scannedUserId);
+//       if (userData != null) {
+//         final scannedUser = UserModel.fromMap(userData);
+        
+//         // Get the current user's data from Firebase Auth
+//         final currentUserData = await _db.loadUser(scannedUser.uid!);
+//         if (currentUserData != null) {
+//           // Create initial chat message or conversation record between users
+//           await _db.createInitialChat(currentUserData['uid'], scannedUserId);
 //         }
+        
+//         return scannedUser;
 //       }
+//       return null;
 //     } catch (e) {
-//       // Handle error if needed
+//       debugPrint('Error processing QR scan: $e');
+//       return null;
+//     } finally {
+//       _isProcessing = false;
+//       setLoading(false);
+//       notifyListeners();
 //     }
-//     return null;
 //   }
 // }
+
+import 'package:chat_app/core/models/user.dart';
+import 'package:chat_app/core/others/base_viewmodel.dart';
+import 'package:chat_app/core/services/database_service.dart';
+import 'package:flutter/material.dart';
+
+class QRScanViewModel extends BaseViewmodel {
+  final DatabaseService _db = DatabaseService();
+  
+  bool _isProcessing = false;
+  bool get isProcessing => _isProcessing;
+
+  void setLoading(bool value) {
+    _isProcessing = value;
+    notifyListeners();
+  }
+
+  Future<UserModel?> processScanResult(String qrData) async {
+    try {
+      setLoading(true);
+
+      // 1. Get the current user's UID.
+      final currentUserUid = _db.getCurrentUserUid();
+      if (currentUserUid == null) {
+        debugPrint('Error: Current user not logged in.');
+        return null;
+      }
+      final parts = qrData.split('_');
+        if (parts.length < 2) {
+          throw Exception('Invalid QR code format.');
+        }
+      final scannedUserId = parts[0];
+      // 2. Load the scanned user's data from the database.
+      final scannedUserData = await _db.loadUser(scannedUserId);
+      if (scannedUserData == null) {
+        debugPrint('Error: Scanned user not found in database.');
+        return null;
+      }
+      final scannedUser = UserModel.fromMap(scannedUserData);
+
+      // 3. Add both users to the 'temporary_chats' collection.
+      await _db.createTemporaryChat(currentUserUid, scannedUserId);
+
+      return scannedUser;
+
+    } catch (e) {
+      debugPrint('Error processing QR scan: $e');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }
+}

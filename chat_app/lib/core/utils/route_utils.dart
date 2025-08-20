@@ -1,5 +1,6 @@
 import 'package:chat_app/core/constants/strings.dart';
 import 'package:chat_app/ui/screens/Qr/QR_gen/Qr_gen_screen.dart';
+import 'package:chat_app/ui/screens/Qr/Qr_scan/Qr_scan_screen.dart';
 import 'package:chat_app/ui/screens/Qr/qr_system/Qr_system_screen.dart';
 import 'package:chat_app/core/models/user.dart';
 import 'package:chat_app/ui/screens/auth/login/login_screen.dart';
@@ -41,8 +42,10 @@ class RouteUtils {
         return MaterialPageRoute(builder: (context) => ChatScreen(receiver: args as UserModel,));
       case qrSystem:
         return MaterialPageRoute(builder: (context) => const QRSystemScreen());
-      // case qrGenerate:
-      //   return MaterialPageRoute(builder: (context) => const QRGenerateScreen());
+      case qrGenerate:
+        return MaterialPageRoute(builder: (context) => const QRScreen());
+      case qrScan:
+        return MaterialPageRoute(builder: (context) => const QRScannerScreen());
         
 
 

@@ -12,15 +12,35 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key, required this.receiver});
   final UserModel receiver;
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+class _ChatScreenState extends State<ChatScreen> {
+  // Add a reference to the ChatService
+  final ChatService _chatService = ChatService();
+  late final UserModel _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    // Use `Provider.of` with `listen: false` to get the current user
+    _currentUser = Provider.of<UserProvider>(context, listen: false).user!;
+
+    // Call the method to reset the unread counter.
+    // The method you defined needs to be part of the `ChatService` class
+    // outside of the `updateLastMessage` method.
+    _chatService.resetUnreadCounter(_currentUser.uid!);
+  }
 
   @override
   Widget build(BuildContext context) {
     final currentUser = Provider.of<UserProvider>(context).user;
     return ChangeNotifierProvider(
-      create: (context) => ChatViewmodel(ChatService(), currentUser!, receiver),
+      create: (context) => ChatViewmodel(ChatService(), currentUser!, widget.receiver),
       child: Consumer<ChatViewmodel>(
         builder: (context, model, _) {
           // Set up callback to show contact request dialog

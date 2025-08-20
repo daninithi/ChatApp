@@ -23,7 +23,7 @@ class AuthService {
       log(e.toString());
       rethrow;
     }
-    return null;
+
   }
 
   Future login(String email, String password) async{
@@ -45,7 +45,7 @@ class AuthService {
       log(e.toString());
       rethrow;
     }
-    return null;
+
   }
 
   Future<void> logout() async {

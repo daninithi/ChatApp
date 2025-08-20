@@ -45,6 +45,9 @@ dependencies:
   pretty_qr_code: ^3.0.0
   intl: ^0.20.2
   image_picker: ^1.0.7
+  mobile_scanner: ^3.4.1
+  qr_flutter: ^4.1.0
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:
