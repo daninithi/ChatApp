@@ -12,6 +12,17 @@ class PlusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUser = Provider.of<UserProvider>(context).user;
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Padding(
+          padding: EdgeInsets.only(top: 8.0),
+          child: Text(
+            'Contacts ',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+          ),
+        ),
+      ),
+
       body: currentUser == null
           ? const Center(child: CircularProgressIndicator())
           : StreamBuilder<QuerySnapshot>(
@@ -26,7 +37,7 @@ class PlusScreen extends StatelessWidget {
                 }
                 final contacts = snapshot.data?.docs ?? [];
                 return ListView.builder(
-                  itemCount: contacts.length + 2,
+                  itemCount: contacts.isEmpty ? 3 : contacts.length + 2,
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return ListTile(
@@ -55,77 +66,162 @@ class PlusScreen extends StatelessWidget {
                         ),
                       );
                     }
+                    if (contacts.isEmpty && index == 2) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24.0),
+                        child: Center(
+                          child: Text(
+                            'You have no any contacts',
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                     final contact =
                         contacts[index - 2].data() as Map<String, dynamic>;
-                    return ListTile(
-                      leading: const CircleAvatar(
-                        backgroundColor: Colors.grey,
-                        child: Icon(Icons.person, color: Colors.white),
-                      ),
-                      title: Text(
-                        contact['name'] ?? '',
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      subtitle: Text(
-                        contact['uid'] ?? '',
-                        style: TextStyle(color: Colors.black54),
-                      ),
-                      onTap: () {
-                        // Construct UserModel for chat screen
-                        final userModel = UserModel(
-                          uid: contact['uid'],
-                          name: contact['name'],
-                          imageUrl: contact['imageUrl'],
-                        );
-                        Navigator.pushNamed(
-                          context,
-                          chatroom,
-                          arguments: userModel,
-                        );
-                      },
-                      onLongPress: () async {
-                        final contactId = contacts[index - 2].id;
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Delete Contact'),
-                            content: const Text(
-                              'Do you want to remove this contact?',
+                    final contactUid = contact['uid'];
+                    return FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(contactUid)
+                          .get(),
+                      builder: (context, userSnapshot) {
+                        if (userSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const ListTile(
+                            leading: CircleAvatar(backgroundColor: Colors.grey),
+                            title: Text(
+                              'Loading...',
+                              style: TextStyle(color: Colors.black),
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  // Delete from current user's contacts
-                                  await FirebaseFirestore.instance
-                                      .collection('contacts')
-                                      .doc(currentUser.uid)
-                                      .collection('userContacts')
-                                      .doc(contactId)
-                                      .delete();
-                                  // Delete from other user's contacts
-                                  final otherUid = contact['uid'];
-                                  await FirebaseFirestore.instance
-                                      .collection('contacts')
-                                      .doc(otherUid)
-                                      .collection('userContacts')
-                                      .doc(currentUser.uid)
-                                      .delete();
-                                  Navigator.of(context).pop();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Contact deleted for both users!',
-                                      ),
+                          );
+                        }
+                        if (!userSnapshot.hasData ||
+                            !userSnapshot.data!.exists) {
+                          return ListTile(
+                            leading: const CircleAvatar(
+                              backgroundColor: Colors.grey,
+                            ),
+                            title: Text(
+                              contact['name'] ?? '',
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          );
+                        }
+                        final userData =
+                            userSnapshot.data!.data() as Map<String, dynamic>?;
+                        final profileImage = userData?['imageUrl'] ?? '';
+                        final profileName =
+                            userData?['name'] ?? contact['name'] ?? '';
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Colors.grey,
+                              backgroundImage: profileImage.isNotEmpty
+                                  ? NetworkImage(profileImage)
+                                  : null,
+                              child: profileImage.isEmpty
+                                  ? const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                      size: 24,
+                                    )
+                                  : null,
+                            ),
+                            title: Text(
+                              profileName,
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.black45,
+                              size: 20,
+                            ),
+                            onTap: () {
+                              final userModel = UserModel(
+                                uid: contactUid,
+                                name: profileName,
+                                imageUrl: profileImage,
+                              );
+                              Navigator.pushNamed(
+                                context,
+                                chatroom,
+                                arguments: userModel,
+                              );
+                            },
+                            onLongPress: () async {
+                              final contactId = contacts[index - 2].id;
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Delete Contact'),
+                                  content: const Text(
+                                    'Do you want to remove this contact?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('Cancel'),
                                     ),
-                                  );
-                                },
-                                child: const Text('Delete'),
-                              ),
-                            ],
+                                    TextButton(
+                                      onPressed: () async {
+                                        await FirebaseFirestore.instance
+                                            .collection('contacts')
+                                            .doc(currentUser.uid)
+                                            .collection('userContacts')
+                                            .doc(contactId)
+                                            .delete();
+                                        final otherUid = contactUid;
+                                        await FirebaseFirestore.instance
+                                            .collection('contacts')
+                                            .doc(otherUid)
+                                            .collection('userContacts')
+                                            .doc(currentUser.uid)
+                                            .delete();
+                                        final chatId = [
+                                          currentUser.uid,
+                                          otherUid,
+                                        ]..sort();
+                                        final chatIdStr = chatId.join('_');
+                                        await FirebaseFirestore.instance
+                                            .collection('chats')
+                                            .doc(chatIdStr)
+                                            .delete();
+                                        await FirebaseFirestore.instance
+                                            .collection('temporary_chats')
+                                            .doc(chatIdStr)
+                                            .delete();
+                                        Navigator.of(context).pop();
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Contact and chat deleted for both users!',
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         );
                       },

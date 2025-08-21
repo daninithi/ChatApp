@@ -15,16 +15,20 @@ class ChatService {
     }
   }
 
-  updateLastMessage(String currentUid, String receiverUid, String message,
-      int timestamp) async {
+  updateLastMessage(
+    String currentUid,
+    String receiverUid,
+    String message,
+    int timestamp,
+  ) async {
     try {
       await _fire.collection("users").doc(currentUid).update({
         "lastMessage": {
           "content": message,
           "timestamp": timestamp,
-          "senderId": currentUid
+          "senderId": currentUid,
         },
-        "unreadCounter": FieldValue.increment(1)
+        "unreadCounter": FieldValue.increment(1),
       });
 
       await _fire.collection("users").doc(receiverUid).update({
@@ -34,17 +38,23 @@ class ChatService {
           "senderId": currentUid,
         },
       });
+
+      // Also update lastMessage in temporary_chats
+      final chatIdList = [currentUid, receiverUid]..sort();
+      final chatIdStr = chatIdList.join('_');
+      await _fire.collection('temporary_chats').doc(chatIdStr).update({
+        'lastMessage': message,
+        'lastMessageTimestamp': Timestamp.fromMillisecondsSinceEpoch(timestamp),
+      });
     } catch (e) {
       rethrow;
     }
   }
 
-      // New function to reset the unread counter when a user views the chat
-    Future<void> resetUnreadCounter(String userUid) async {
+  // New function to reset the unread counter when a user views the chat
+  Future<void> resetUnreadCounter(String userUid) async {
     try {
-      await _fire.collection("users").doc(userUid).update({
-        "unreadCounter": 0,
-      });
+      await _fire.collection("users").doc(userUid).update({"unreadCounter": 0});
     } catch (e) {
       rethrow;
     }

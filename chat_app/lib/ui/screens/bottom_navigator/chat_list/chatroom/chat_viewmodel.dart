@@ -7,6 +7,7 @@ import 'package:chat_app/core/models/message.dart';
 import 'package:chat_app/core/services/database_service.dart';
 import 'package:chat_app/core/services/chat_service.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatViewmodel extends BaseViewmodel {
   StreamSubscription? _contactRequestSubscription;
@@ -75,6 +76,29 @@ class ChatViewmodel extends BaseViewmodel {
         receiverId: _receiver.uid,
         timestamp: now,
       );
+
+      // Ensure chat document exists in temporary_chats before saving message
+      final chatIdList = [_currentUser.uid, _receiver.uid]..sort();
+      final chatIdStr = chatIdList.join('_');
+      final tempChatRef = FirebaseFirestore.instance
+          .collection('temporary_chats')
+          .doc(chatIdStr);
+      final tempChatDoc = await tempChatRef.get();
+      if (!tempChatDoc.exists) {
+        await tempChatRef.set({
+          'participants': [_currentUser.uid, _receiver.uid],
+          'lastMessage': message.content,
+          'lastMessageTimestamp': now,
+          'createdAt': now,
+          'unreadCounter_${_receiver.uid}': 1,
+        });
+      } else {
+        await tempChatRef.update({
+          'lastMessage': message.content,
+          'lastMessageTimestamp': now,
+          'unreadCounter_${_receiver.uid}': FieldValue.increment(1),
+        });
+      }
 
       await _chatService.saveMessage(message.toMap(), chatRoomId);
 

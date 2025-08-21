@@ -21,7 +21,7 @@ class QRSystemScreen extends StatelessWidget {
               ),
             ),
 
-            backgroundColor: Colors.white,
+            // backgroundColor: Colors.white,
             
             body: SafeArea(
               child: SingleChildScrollView(
