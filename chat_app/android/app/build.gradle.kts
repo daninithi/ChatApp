@@ -16,6 +16,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -41,6 +42,18 @@ android {
         }
     }
 }
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}// Example Firestore message creation in Flutter
+await FirebaseFirestore.instance.collection('messages').add({
+  'chatId': chatId,
+  'senderUid': senderUid,
+  'receiverUid': receiverUid,
+  'text': messageText,
+  'timestamp': FieldValue.serverTimestamp(),
+  'isRead': false,
+});
 
 flutter {
     source = "../.."
