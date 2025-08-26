@@ -5,6 +5,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DatabaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _fire = FirebaseFirestore.instance;
+  
+  Future<void> saveUserFcmToken(String userId, String token) async {
+    try {
+      await _fire.collection('users').doc(userId).update({
+        'fcmToken': token,
+      });
+      log("FCM token saved successfully for user: $userId");
+    } catch (e) {
+      log("Error saving FCM token: $e");
+      // Fallback to set if the document doesn't exist yet
+      try {
+        await _fire.collection('users').doc(userId).set({
+          'fcmToken': token,
+        }, SetOptions(merge: true));
+        log("FCM token saved successfully using set for user: $userId");
+      } catch (e) {
+        log("Error saving FCM token with set: $e");
+        rethrow;
+      }
+    }
+  }
+
   // Save a contact for a user
   Future<void> saveContact(
     String ownerUid,
@@ -174,4 +196,6 @@ class DatabaseService {
         .orderBy('lastMessageTimestamp', descending: true)
         .snapshots();
   }
+
+  
 }

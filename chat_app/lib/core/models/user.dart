@@ -8,12 +8,14 @@ class UserModel {
   final String? imageUrl;
   final Map<String, dynamic>? lastMessage;
   final int? unreadCounter;
+  final String? fcmToken;
 
   UserModel(
       {this.uid,
       this.name,
       this.email,
       this.imageUrl,
+      this.fcmToken,
       this.lastMessage,
       this.unreadCounter
       });
@@ -24,6 +26,7 @@ class UserModel {
       'name': name,
       'email': email,
       'imageUrl': imageUrl,
+      'fcmToken': fcmToken, 
       'lastMessage': lastMessage,
       'unreadCounter': unreadCounter
     };
@@ -35,6 +38,7 @@ class UserModel {
       uid: map['uid'] != null ? map['uid'] as String : null,
       name: map['name'] != null ? map['name'] as String : null,
       email: map['email'] != null ? map['email'] as String : null,
+      fcmToken: map['fcmToken'] != null ? map['fcmToken'] as String : null,
       imageUrl: map['imageUrl'] != null ? map['imageUrl'] as String : null,
       lastMessage: map['lastMessage'] != null
           ? Map<String, dynamic>.from(
@@ -53,7 +57,7 @@ class UserModel {
   @override
   String toString() {
     // return 'UserModel(uid: $uid, name: $name, email: $email, imageUrl: $imageUrl, lastMessage: $lastMessage, unreadCounter: $unreadCounter)';
-    return 'UserModel(uid: $uid, name: $name, email: $email, imageUrl: $imageUrl, lastMessage: $lastMessage)';
+    return 'UserModel(uid: $uid, name: $name, email: $email, imageUrl: $imageUrl, fcmToken: $fcmToken, lastMessage: $lastMessage)';
   }
 
   // Add this copyWith method
@@ -62,6 +66,7 @@ class UserModel {
     String? name,
     String? email,
     String? profileImageUrl,
+    String? fcmToken,
     String? status,
     Map<String, dynamic>? lastMessage,
     int? unreadCounter,
@@ -71,6 +76,7 @@ class UserModel {
       name: name ?? this.name,
       email: email ?? this.email,
       imageUrl: imageUrl ?? this.imageUrl,
+      fcmToken: fcmToken ?? this.fcmToken,
       lastMessage: lastMessage ?? this.lastMessage,
       unreadCounter: unreadCounter ?? this.unreadCounter,
     );

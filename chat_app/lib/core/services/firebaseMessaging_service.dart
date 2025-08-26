@@ -1,5 +1,9 @@
+// firebaseMessaging_service.dart
+import 'package:chat_app/core/services/database_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:chat_app/core/services/local_notification_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:developer'; // Added the dart:developer import for the 'log' function
 
 class FirebaseMessagingService {
   // Private constructor for singleton pattern
@@ -14,19 +18,28 @@ class FirebaseMessagingService {
   // Reference to local notifications service for displaying notifications
   LocalNotificationService? _localNotificationsService;
 
+  // Reference to the database service for saving tokens
+  final DatabaseService _databaseService = DatabaseService();
+
   /// Initialize Firebase Messaging and sets up all message listeners
   Future<void> init({required LocalNotificationService localNotificationsService}) async {
     // Init local notifications service
     _localNotificationsService = localNotificationsService;
 
-    // Handle FCM token
-    _handlePushNotificationsToken();
+    // Listen for authentication state changes to get the user UID
+    FirebaseAuth.instance.authStateChanges().listen((user) async {
+      if (user != null) {
+        log('User authenticated. Initializing FCM.');
+        // Handle FCM token after a user has signed in
+        // Pass the user.uid to the handler function
+        await _handlePushNotificationsToken(user.uid);
+      } else {
+        log('User is not authenticated. Skipping FCM token handling.');
+      }
+    });
 
     // Request user permission for notifications
-    _requestPermission();
-
-    // Register handler for background messages (app terminated)
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    await _requestPermission();
 
     // Listen for messages when the app is in foreground
     FirebaseMessaging.onMessage.listen(_onForegroundMessage);
@@ -42,18 +55,26 @@ class FirebaseMessagingService {
   }
 
   /// Retrieves and manages the FCM token for push notifications
-  Future<void> _handlePushNotificationsToken() async {
+  // Corrected method signature to accept the userId parameter
+  Future<void> _handlePushNotificationsToken(String userId) async {
     // Get the FCM token for the device
     final token = await FirebaseMessaging.instance.getToken();
-    print('Push notifications token: $token');
+    if (token != null) {
+      log('Push notifications token: $token');
+      // Save the token to the current user's Firestore document
+      await _databaseService.saveUserFcmToken(userId, token);
+    } else {
+      log('Failed to get FCM token.');
+    }
 
     // Listen for token refresh events
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-      print('FCM token refreshed: $fcmToken');
-      // TODO: optionally send token to your server for targeting this device
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) async {
+      log('FCM token refreshed: $fcmToken');
+      // Update the token in Firestore for the current user
+      await _databaseService.saveUserFcmToken(userId, fcmToken);
     }).onError((error) {
       // Handle errors during token refresh
-      print('Error refreshing FCM token: $error');
+      log('Error refreshing FCM token: $error');
     });
   }
 
@@ -67,12 +88,12 @@ class FirebaseMessagingService {
     );
 
     // Log the user's permission decision
-    print('User granted permission: ${result.authorizationStatus}');
+    log('User granted permission: ${result.authorizationStatus}');
   }
 
   /// Handles messages received while the app is in the foreground
   void _onForegroundMessage(RemoteMessage message) {
-    print('Foreground message received: ${message.data.toString()}');
+    log('Foreground message received: ${message.data.toString()}');
     final notificationData = message.notification;
     if (notificationData != null) {
       // Display a local notification using the service
@@ -83,14 +104,7 @@ class FirebaseMessagingService {
 
   /// Handles notification taps when app is opened from the background or terminated state
   void _onMessageOpenedApp(RemoteMessage message) {
-    print('Notification caused the app to open: ${message.data.toString()}');
+    log('Notification caused the app to open: ${message.data.toString()}');
     // TODO: Add navigation or specific handling based on message data
   }
-}
-
-/// Background message handler (must be top-level function or static)
-/// Handles messages when the app is fully terminated
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('Background message received: ${message.data.toString()}');
 }
